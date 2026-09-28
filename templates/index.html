@@ -1,0 +1,969 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>FoodSafe | Blockchain Tracker</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='warm.css') }}">
+
+    <style>
+        /* Dashboard statistics */
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin: 28px 0;
+        }
+
+        .stat-card {
+            background: #fffdf8;
+            border: 1px solid rgba(82, 122, 56, 0.16);
+            border-radius: 18px;
+            padding: 22px;
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            box-shadow: 0 8px 24px rgba(58, 73, 43, 0.06);
+        }
+
+        .stat-icon {
+            width: 46px;
+            height: 46px;
+            min-width: 46px;
+            border-radius: 14px;
+            background: #edf4e8;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 21px;
+        }
+
+        .stat-card h2 {
+            margin: 3px 0 4px;
+            font-size: 30px;
+            color: #304526;
+        }
+
+        .stat-card p:last-child {
+            margin: 0;
+            font-size: 13px;
+            color: #78816f;
+        }
+
+        .valid-text {
+            color: #527a38 !important;
+        }
+
+        .invalid-text {
+            color: #a94b3c !important;
+        }
+
+        @media (max-width: 900px) {
+            .dashboard {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 560px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+
+<body>
+
+<header class="topbar">
+
+    <a class="brand" href="/">
+        <b>✦</b>
+
+        <span>
+            FoodSafe
+            <small>BLOCKCHAIN</small>
+        </span>
+    </a>
+
+    <span class="secure">
+        ● Secure traceability
+    </span>
+
+</header>
+
+
+<main class="shell">
+
+
+    <!-- HERO -->
+
+    <section class="hero">
+
+        <div>
+
+            <p class="eyebrow">
+                FOOD SUPPLY CHAIN TRACKING
+            </p>
+
+            <h1>
+                Every food journey,
+                <br>
+                <em>verifiable.</em>
+            </h1>
+
+            <p>
+                Register a batch, track every handoff,
+                and verify its blockchain record in one place.
+            </p>
+
+        </div>
+
+
+        <aside>
+
+            🔗
+
+            <strong>
+                Blockchain protected
+            </strong>
+
+            <span>
+                Each event is permanently linked
+                to the one before it.
+            </span>
+
+        </aside>
+
+    </section>
+
+
+    <!-- DASHBOARD STATISTICS -->
+
+    <section class="dashboard">
+
+
+        <article class="stat-card">
+
+            <span class="stat-icon">
+                📦
+            </span>
+
+            <div>
+
+                <p class="eyebrow">
+                    TOTAL BATCHES
+                </p>
+
+                <h2>
+                    {{ stats.total_batches }}
+                </h2>
+
+                <p>
+                    Registered food batches
+                </p>
+
+            </div>
+
+        </article>
+
+
+        <article class="stat-card">
+
+            <span class="stat-icon">
+                🔗
+            </span>
+
+            <div>
+
+                <p class="eyebrow">
+                    BLOCKCHAIN BLOCKS
+                </p>
+
+                <h2>
+                    {{ stats.total_blocks }}
+                </h2>
+
+                <p>
+                    Records stored on-chain
+                </p>
+
+            </div>
+
+        </article>
+
+
+        <article class="stat-card">
+
+            <span class="stat-icon">
+                ✓
+            </span>
+
+            <div>
+
+                <p class="eyebrow">
+                    COMPLETED JOURNEYS
+                </p>
+
+                <h2>
+                    {{ stats.completed_journeys }}
+                </h2>
+
+                <p>
+                    Reached retail stage
+                </p>
+
+            </div>
+
+        </article>
+
+
+        <article class="stat-card">
+
+            <span class="stat-icon">
+                🛡
+            </span>
+
+            <div>
+
+                <p class="eyebrow">
+                    INTEGRITY STATUS
+                </p>
+
+
+                {% if stats.blockchain_valid %}
+
+                    <h2 class="valid-text">
+                        VALID
+                    </h2>
+
+                    <p>
+                        Blockchain verified
+                    </p>
+
+                {% else %}
+
+                    <h2 class="invalid-text">
+                        INVALID
+                    </h2>
+
+                    <p>
+                        Check required
+                    </p>
+
+                {% endif %}
+
+            </div>
+
+        </article>
+
+
+    </section>
+
+
+    <!-- SUPPLY CHAIN -->
+
+    <section class="stages">
+
+        <span>01 Farm</span>
+
+        <i></i>
+
+        <span>02 Processing</span>
+
+        <i></i>
+
+        <span>03 Quality</span>
+
+        <i></i>
+
+        <span>04 Transport</span>
+
+        <i></i>
+
+        <span>05 Warehouse</span>
+
+        <i></i>
+
+        <span>06 Retail</span>
+
+    </section>
+
+
+    <!-- ALERTS -->
+
+    {% if error %}
+
+        <div class="alert bad">
+            ! {{ error }}
+        </div>
+
+    {% endif %}
+
+
+    {% if validation_message %}
+
+        <div class="alert
+            {% if 'valid and' in validation_message %}
+                good
+            {% else %}
+                bad
+            {% endif %}
+        ">
+
+            {{ validation_message }}
+
+        </div>
+
+    {% endif %}
+
+
+    <!-- FORMS -->
+
+    <section class="forms">
+
+
+        <!-- REGISTER PRODUCT -->
+
+        <article class="card">
+
+            <div class="title">
+
+                <b class="icon green">
+                    +
+                </b>
+
+                <div>
+
+                    <p class="eyebrow">
+                        NEW BATCH
+                    </p>
+
+                    <h2>
+                        Register product
+                    </h2>
+
+                </div>
+
+            </div>
+
+
+            <p>
+                Start a traceable food-supply record.
+            </p>
+
+
+            <form action="/add_product" method="POST">
+
+                <label>
+                    Product name
+
+                    <input
+                        type="text"
+                        name="product"
+                        placeholder="e.g. Fresh milk"
+                        required
+                    >
+
+                </label>
+
+
+                <label>
+                    Batch ID
+
+                    <input
+                        type="text"
+                        name="batch_id"
+                        placeholder="e.g. MILK001"
+                        required
+                    >
+
+                </label>
+
+
+                <label>
+                    Producer
+
+                    <input
+                        type="text"
+                        name="producer"
+                        placeholder="e.g. ABC Dairy"
+                        required
+                    >
+
+                </label>
+
+
+                <button
+                    class="primary"
+                    type="submit"
+                >
+                    Register on blockchain →
+                </button>
+
+            </form>
+
+        </article>
+
+
+        <!-- UPDATE JOURNEY -->
+
+        <article class="card">
+
+            <div class="title">
+
+                <b class="icon blue">
+                    ↗
+                </b>
+
+                <div>
+
+                    <p class="eyebrow">
+                        SUPPLY-CHAIN EVENT
+                    </p>
+
+                    <h2>
+                        Update journey
+                    </h2>
+
+                </div>
+
+            </div>
+
+
+            <p>
+                Add the next verified event for a batch.
+            </p>
+
+
+            <form action="/update_stage" method="POST">
+
+
+                <label>
+
+                    Batch ID
+
+                    <input
+                        type="text"
+                        id="stage_batch_id"
+                        name="batch_id"
+                        placeholder="e.g. MILK001"
+                        required
+                    >
+
+                </label>
+
+
+                <div class="twocol">
+
+
+                    <label>
+
+                        Next stage
+
+                        <select name="stage" required>
+
+                            <option value="Processing">
+                                Processing
+                            </option>
+
+                            <option value="Quality Inspection">
+                                Quality Inspection
+                            </option>
+
+                            <option value="Transportation">
+                                Transportation
+                            </option>
+
+                            <option value="Warehouse">
+                                Warehouse
+                            </option>
+
+                            <option value="Retail">
+                                Retail
+                            </option>
+
+                        </select>
+
+                    </label>
+
+
+                    <label>
+
+                        Status
+
+                        <select name="status" required>
+
+                            <option value="Passed">
+                                Passed
+                            </option>
+
+                            <option value="In Transit">
+                                In Transit
+                            </option>
+
+                            <option value="Stored">
+                                Stored
+                            </option>
+
+                            <option value="Available">
+                                Available
+                            </option>
+
+                        </select>
+
+                    </label>
+
+                </div>
+
+
+                <div class="twocol">
+
+
+                    <label>
+
+                        Location
+
+                        <input
+                            type="text"
+                            id="stage_location"
+                            name="location"
+                            placeholder="e.g. Aurangabad"
+                            required
+                        >
+
+                    </label>
+
+
+                    <label>
+
+                        Temperature
+
+                        <input
+                            type="text"
+                            id="stage_temperature"
+                            name="temperature"
+                            placeholder="e.g. 4°C"
+                            required
+                        >
+
+                    </label>
+
+                </div>
+
+
+                <button
+                    class="dark"
+                    type="submit"
+                >
+                    Add verified event →
+                </button>
+
+            </form>
+
+        </article>
+
+    </section>
+
+
+    <!-- TOOLS -->
+
+    <section class="tools">
+
+
+        <!-- BATCH JOURNEY -->
+
+        <article class="card journey">
+
+            <div>
+
+                <p class="eyebrow">
+                    TRACE A BATCH
+                </p>
+
+                <h2>
+                    View its complete journey
+                </h2>
+
+                <p>
+                    See every recorded handoff, location,
+                    status, and timestamp.
+                </p>
+
+            </div>
+
+
+            <form
+                id="batchForm"
+                class="inline"
+            >
+
+                <input
+                    type="text"
+                    id="batch_id"
+                    placeholder="Enter Batch ID"
+                    required
+                >
+
+                <button
+                    class="primary"
+                    type="submit"
+                >
+                    View journey
+                </button>
+
+            </form>
+
+        </article>
+
+
+        <!-- INTEGRITY -->
+
+        <article class="card check">
+
+            <b class="icon purple">
+                ✓
+            </b>
+
+            <div>
+
+                <p class="eyebrow">
+                    INTEGRITY CHECK
+                </p>
+
+                <h2>
+                    Validate blockchain
+                </h2>
+
+                <p>
+                    Confirm that no record has been altered.
+                </p>
+
+                <form
+                    action="/validate"
+                    method="GET"
+                >
+
+                    <button
+                        class="linkbutton"
+                        type="submit"
+                    >
+                        Run check →
+                    </button>
+
+                </form>
+
+            </div>
+
+        </article>
+
+    </section>
+
+
+    <!-- BLOCKCHAIN LEDGER -->
+
+    <section class="ledger">
+
+
+        <div class="ledgerhead">
+
+            <div>
+
+                <p class="eyebrow">
+                    IMMUTABLE LEDGER
+                </p>
+
+                <h2>
+                    Blockchain records
+                </h2>
+
+            </div>
+
+
+            <span id="recordCount">
+                Loading…
+            </span>
+
+        </div>
+
+
+        <div
+            id="blockchain"
+            class="blocks"
+        >
+
+            <p>
+                Loading blockchain records…
+            </p>
+
+        </div>
+
+    </section>
+
+
+</main>
+
+
+<footer>
+
+    FoodSafe Blockchain Tracker
+
+    <span>•</span>
+
+    Built for transparent food supply chains
+
+</footer>
+
+
+<script>
+
+
+    /*
+     * Remember the last-used supply-chain information.
+     */
+
+    const batchInput =
+        document.getElementById("stage_batch_id");
+
+    const locationInput =
+        document.getElementById("stage_location");
+
+    const temperatureInput =
+        document.getElementById("stage_temperature");
+
+
+    batchInput.value =
+        localStorage.getItem("batch_id") || "";
+
+    locationInput.value =
+        localStorage.getItem("location") || "";
+
+    temperatureInput.value =
+        localStorage.getItem("temperature") || "";
+
+
+    batchInput.addEventListener(
+        "input",
+        () => localStorage.setItem(
+            "batch_id",
+            batchInput.value
+        )
+    );
+
+
+    locationInput.addEventListener(
+        "input",
+        () => localStorage.setItem(
+            "location",
+            locationInput.value
+        )
+    );
+
+
+    temperatureInput.addEventListener(
+        "input",
+        () => localStorage.setItem(
+            "temperature",
+            temperatureInput.value
+        )
+    );
+
+
+    /*
+     * Blockchain record helper.
+     */
+
+    function field(label, value) {
+
+        const d =
+            document.createElement("div");
+
+        d.innerHTML =
+            `<small>${label}</small>`;
+
+        const v =
+            document.createElement("code");
+
+        v.textContent = value;
+
+        d.append(v);
+
+        return d;
+    }
+
+
+    /*
+     * Load blockchain records.
+     */
+
+    function loadBlockchain() {
+
+        fetch("/blockchain")
+
+            .then(response => response.json())
+
+            .then(data => {
+
+                const box =
+                    document.getElementById("blockchain");
+
+                box.innerHTML = "";
+
+
+                document.getElementById(
+                    "recordCount"
+                ).textContent =
+                    `${data.blockchain.length} blocks`;
+
+
+                data.blockchain.forEach(block => {
+
+                    const card =
+                        document.createElement("article");
+
+                    card.className = "block";
+
+
+                    const title =
+                        document.createElement("h3");
+
+                    title.textContent =
+                        block.index === 0
+                            ? "Genesis block"
+                            : `Block ${block.index}`;
+
+
+                    const event =
+                        document.createElement("p");
+
+                    event.textContent =
+                        block.index === 0
+                            ? block.data.message
+                            : `${block.data.batch_id || "Batch"} · ${block.data.stage || "Event"}`;
+
+
+                    const meta =
+                        document.createElement("div");
+
+                    meta.className = "meta";
+
+
+                    meta.append(
+
+                        field(
+                            "Recorded",
+                            block.timestamp
+                        ),
+
+                        field(
+                            "Hash",
+                            block.hash
+                        ),
+
+                        field(
+                            "Previous hash",
+                            block.previous_hash
+                        ),
+
+                        field(
+                            "Nonce",
+                            block.nonce
+                        )
+
+                    );
+
+
+                    const details =
+                        document.createElement("details");
+
+
+                    details.innerHTML =
+                        "<summary>View block data</summary>";
+
+
+                    const code =
+                        document.createElement("code");
+
+
+                    code.textContent =
+                        JSON.stringify(
+                            block.data,
+                            null,
+                            2
+                        );
+
+
+                    details.append(code);
+
+
+                    card.append(
+                        title,
+                        event,
+                        meta,
+                        details
+                    );
+
+
+                    box.append(card);
+
+                });
+
+            })
+
+            .catch(() => {
+
+                document.getElementById(
+                    "blockchain"
+                ).textContent =
+                    "Could not load blockchain records.";
+
+            });
+
+    }
+
+
+    /*
+     * Batch Journey.
+     */
+
+    document
+        .getElementById("batchForm")
+        .addEventListener(
+            "submit",
+            event => {
+
+                event.preventDefault();
+
+
+                const batchId =
+                    document.getElementById(
+                        "batch_id"
+                    ).value;
+
+
+                window.location.href =
+                    "/batch/" +
+                    encodeURIComponent(batchId);
+
+            }
+        );
+
+
+    /*
+     * Load the blockchain when the page opens.
+     */
+
+    loadBlockchain();
+
+
+</script>
+
+
+</body>
+
+</html>
